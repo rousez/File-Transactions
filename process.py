@@ -2,6 +2,8 @@ from transaction import Transaction
 from collections import Counter
 import time
 
+start = time.clock()
+
 retail_file = "retail.dat"
 history_triplet_log = []
 history_pair_log = []
@@ -42,10 +44,8 @@ def get_triplet_log(items):
 		history_triplet_log.append((items[item], items[item + 1], items[item + 2]))
 	return None
 
-
 def main():
 	with open(retail_file, "r") as retail_data:
-		start = time.clock()
 		count = 0
 		for line in retail_data:
 			trans = Transaction(count, map(int, line.split()))
@@ -54,6 +54,7 @@ def main():
 			get_triplet_log(parsed_items)
 			get_single_log(parsed_items)
 			count += 1
+	print("**** Using no threading or multi-processing ****\n")
 	print("File: %s contains %d lines.\n" % (retail_file, count))
 	highest_pairs, pair_count = get_highest_count(history_pair_log)
 	highest_triplets, triplet_count = get_highest_count(history_triplet_log)
@@ -72,15 +73,16 @@ def main():
 	# calculate the probability of the highest triplet occurence.
 	prob_of_triplets = float(triplet_count) / float(prob_count_from_triplets)
 
-	print("The highest co-occurence item pairs in the file are: %s  with count %d" % (str(highest_pairs), pair_count))
-	print("The probability of this occurence of pairs is ~%.2f chance" % (prob_of_pair))
-	print prob_count_from_pair
-	print("The highest co-occurence item triplets in the file are: %s  with count %d" % (str(highest_triplets), triplet_count))
-	print("The probability of this occurence of triplets is ~%.2f chance" % (prob_of_triplets))
-	print prob_count_from_triplets
+	print("The highest co-occurence item pairs in the file are: %s with count %d" % (str(highest_pairs), pair_count))
+	print("The probability of this occurence of pairs is:   ~%.2f" % (prob_of_pair))
+
+	print("\nThe highest co-occurence item triplets in the file are: %s with count %d" % (str(highest_triplets), triplet_count))
+	print("The probability of this occurence of triplets is:   ~%.2f" % (prob_of_triplets))
+	
 	retail_data.close()
 	end = time.clock()
 	print("\nFinished in %s seconds." % (end - start))
+	print("=======================================================================")
 
 if __name__ == "__main__":
 	main()
